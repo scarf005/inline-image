@@ -1,0 +1,1 @@
+{ "name": "inline-image", "version": "0.1.0", "description": "Draws image files named in a reply under it as kitty-protocol images.", "license": "AGPL-3.0-only" }

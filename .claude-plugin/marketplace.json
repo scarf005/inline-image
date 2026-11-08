@@ -1,0 +1,5 @@
+{
+  "name": "inline-image",
+  "owner": { "name": "scarf005" },
+  "plugins": [{ "name": "inline-image", "source": "./", "description": "Draws image files named in a reply under it as kitty-protocol images.", "category": "productivity" }]
+}
