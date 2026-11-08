@@ -6,7 +6,7 @@ Claude Code mod. It draws every image path written in a reply (`.png`, `.jpg`, `
 
 - The terminal must support the kitty graphics protocol.
 - `ffmpeg` and `ffprobe` must be in `PATH`.
-- Each image is at most 30 rows tall and 2 MiB decoded. GIF and video show the first frame.
+- Each image is at most 30 rows tall. A large image is downscaled until its PNG is under 2 MiB. GIF and video show the first frame.
 
 ## Install
 

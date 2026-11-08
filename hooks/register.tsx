@@ -3,6 +3,7 @@ import type { Register } from 'claude-code'
 const IMAGE = /\/[^\n"'`()<>[\]]*?\.(?:png|jpe?g|gif|webp|bmp)(?![A-Za-z0-9])/gi
 const MAX_ROWS = 30
 const CELL_W = 10
+const WIDTHS = [1280, 960, 720, 540, 400]
 
 type Picture = { file: string; png: string; columns: number; rows: number }
 
@@ -36,10 +37,12 @@ export const register: Register = on => {
           const wide = Math.max(1, Math.min(room, Math.ceil(w / CELL_W)))
           const rows = Math.max(1, Math.min(MAX_ROWS, Math.ceil((wide * h) / w / 2)))
           const columns = Math.max(1, Math.min(wide, Math.floor((rows * 2 * w) / h)))
-          const ran = await $.process.run(['sh', '-c', `ffmpeg -v error -i "$1" -frames:v 1 -vf "scale='min(1280,iw)':-2" -f image2 -c:v png - | base64 -w0`, 'sh', file]).catch(() => undefined)
-          // The picture is held to 2 MiB decoded.
-          if (!ran || ran.stdout.length === 0 || ran.stdout.length > 2.7e6) return null
-          return { file, png: ran.stdout, columns, rows }
+          // The picture is held to 2 MiB decoded: shrink it until its PNG fits.
+          for (const width of WIDTHS) {
+            const ran = await $.process.run(['sh', '-c', `ffmpeg -v error -i "$1" -frames:v 1 -vf "scale='min($2,iw)':-2" -f image2 -c:v png - | base64 -w0`, 'sh', file, `${width}`]).catch(() => undefined)
+            if (ran && ran.stdout.length > 0 && ran.stdout.length <= 2.7e6) return { file, png: ran.stdout, columns, rows }
+          }
+          return null
         })()
         pictures.set(key, loaded)
         return loaded
